@@ -13,17 +13,18 @@
 section .data
       uinput:     db    0
       buf_sz:     db    255
+
       zerone:     dw    0x3031
-      onezer:     dw    0x3130
+                  dw    0x3130
 
       mem_at:     dd    0
       mem_sz:     dd    0
 
-      inputmsg:   db    'input> '
-      inputlen:   equ   $ - inputmsg
+      in_msg:     db    'input> '
+      in_len:     equ   $-in_msg
 
-      errormsg:   db    'error.', 0x0a
-      errorlen:   equ   $ - errormsg
+      er_msg:     db    'error.', 0x0a
+      er_len:     equ   $-er_msg
 
 section .bss
       buffer:     resb  255
@@ -35,18 +36,18 @@ section .text
 _start:
       mov   eax, 4            ; sys_write
       mov   ebx, 1            ; stdout
-      mov   ecx, inputmsg
-      mov   edx, inputlen
-      int   80h
+      mov   ecx, in_msg
+      mov   edx, in_len
+      int   80h               ; write prompt
 
       mov   eax, 3            ; sys_read
       mov   ebx, 2            ; stdin
       mov   ecx, buffer
       mov   edx, buf_sz
-      int   80h
+      int   80h               ; read user input
 
       test  eax, eax
-      js    .error            ; jump on error (-1)
+      js    .error            ; exit on error (-1)
 
       mov   ecx, 0            ; ecx is next used as
                               ; exit code or counter
@@ -54,7 +55,7 @@ _start:
       test  eax, eax
       jz    .quit             ; no input given :-(
 
-      mov   esi, buffer
+      mov   esi, buffer       ;;; parse input
 .nextint:
       mov   dl, byte [esi]    ; take a byte
       inc   esi               ; (*buffer)++
@@ -67,20 +68,20 @@ _start:
       test  eax, eax          ; more to read,
       jnz   .nextint          ; read more
 
-      test  ecx, ecx          ; user gave zero, bail out
+      and   ecx, 0xff         ; 255^2 ought to be enough for anybody
+      test  ecx, ecx          ; test for zero || bail out
       jz    .quit             ; jecxz jumps too short!
 
       mov   [uinput], cl      ; save user input
 
       mov   eax, ecx          ; calc required memory
-      inc   eax               ; sidenote: n(n+1) is always even
+      inc   eax               ; n(n+1) is always even, which is nice
       mul   ecx
 
       mov   ecx, eax
       mov   [mem_sz], eax     ; save for later
 
-.bork:
-      mov   eax, 45
+      mov   eax, 45           ;;; reserve memory
       mov   ebx, 0
       int   80h               ; get original break..
 
@@ -92,23 +93,22 @@ _start:
       int   80h               ; new break at eax if success
 
       test  edi, eax          ; old and new break
-      je    .quit             ; should NOT be equal (brk(2))
+      je    .quit             ; should NOT be equal (see brk(2))
 
       mov   [mem_at], edi     ; save mem ptr
 
-      mov   ax, word [zerone] ; lets initialize memory we have
+      mov   ax, word [zerone] ;;; initialize memory
       shr   ecx, 1
       rep   stosw             ; now it should read 010101...
 
       mov   bl, [uinput]
       and   ebx, 0x01
+      test  bl, bl            ; we only need to redo odd rows
+      jz    .even             ; if user gave us an odd number
 
-      test  ebx, ebx
-      jz    .even
-
-      mov   bl, [uinput]
+      mov   bl, [uinput]      ;;; rewrite odd rows to start with 1
       shr   bl, 1
-      mov   ax, [onezer]
+      mov   ax, [zerone+2]
       mov   edi, [mem_at]
 .odds:
       mov   cl, [uinput]
@@ -123,18 +123,17 @@ _start:
       jnz   .odds
 
 .even:
-      mov   eax, 0x0a         ; newlines for the masses
+      mov   eax, 0x0a         ;;; insert newlines
       mov   edi, [mem_at]
       mov   cl, [uinput]
       mov   edx, ecx
       inc   edx
-.newline:
+.newlines:
       add   edi, edx
       mov   [edi], al
-      loop  .newline
+      loop  .newlines
 
-.prnt:
-      mov   eax, 4
+      mov   eax, 4            ;;; print
       mov   ebx, 1
       mov   ecx, [mem_at]
       mov   edx, [mem_sz]
@@ -142,16 +141,16 @@ _start:
       int   80h
 
 .quit:
-      mov   ebx, ecx          ; exit(ecx)
+      mov   ebx, 0            ;;; exit(0)
       mov   eax, 1
       int   80h
 
 .error:
-      mov   eax, 4            ; print err msg
+      mov   eax, 4            ; print error
       mov   ebx, 1
-      mov   ecx, errormsg
-      mov   edx, errorlen
+      mov   ecx, er_msg
+      mov   edx, er_len
       int   80h
-      mov   eax, 1            ; sys_exit
-      mov   ebx, 1            ; exit code 1
+      mov   eax, 1            ; exit(1)
+      mov   ebx, 1
       int   80h
