@@ -1,0 +1,29 @@
+
+  +-----------+
+  |  nollayx  |
+  +-----------+
+
+Tehtävä:
+  http://www.cs.helsinki.fi/u/ahslaaks/oh/shakki.html
+
+Vaatimukset:
+  Netwide Assembler (nasm)
+  Linux
+  IA-32 tai yhteensopiva
+
+Käyttö:
+  Ohjelman voi kääntää joko 32- tai 64-bittiselle
+  alustalle GNU make(1):n kanssa:
+
+  $ make elf64
+    tai
+  $ make elf32
+
+Huomioita:
+  * Ohjelma on suunniteltu tulostamaan merkkiruudukko,
+    jonka sivun pituus on välillä 1–255.
+
+  * Kaikki käyttäjän antamat merkkijonot ovat valideja
+    syötteitä ja ne tulkitaan best effort -periaatteella.
+
+  * Ohjelma on aika nopea.

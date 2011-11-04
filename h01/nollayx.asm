@@ -99,18 +99,21 @@ _start:
 
       mov   ax, word [zerone] ;;; initialize memory
       shr   ecx, 1
-      rep   stosw             ; now it should read 010101...
+      rep   stosw             ; write zero-one pattern
 
       mov   bl, [uinput]
       and   ebx, 0x01
-      test  bl, bl            ; we only need to redo odd rows
-      jz    .even             ; if user gave us an odd number
+      test  bl, bl            ; no need to redo even rows,
+      jz    .odd              ; if user input is an odd number..
 
-      mov   bl, [uinput]      ;;; rewrite odd rows to start with 1
-      shr   bl, 1
+      mov   bl, [uinput]
+      cmp   bl, 1
+      je    .odd              ; ..or number 1
+
+      shr   bl, 1             ;;; rewrite odd rows
       mov   ax, [zerone+2]
       mov   edi, [mem_at]
-.odds:
+.even:
       mov   cl, [uinput]
       add   edi, ecx
       inc   edi
@@ -120,9 +123,9 @@ _start:
 
       dec   ebx
       test  ebx, ebx
-      jnz   .odds
+      jnz   .even
 
-.even:
+.odd:
       mov   eax, 0x0a         ;;; insert newlines
       mov   edi, [mem_at]
       mov   cl, [uinput]
