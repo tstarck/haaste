@@ -1,4 +1,4 @@
-CFLAGS=-ansi -pedantic -Wall
+CFLAGS=-O2 -ansi -pedantic -Wall
 
 all: spiraali
 
