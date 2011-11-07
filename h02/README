@@ -1,0 +1,18 @@
+
+  +------------+
+  |  spiraali  |
+  +------------+
+
+Tehtävä:
+  http://www.cs.helsinki.fi/u/ahslaaks/oh/spiraali.html
+
+Kieli / vaatimukset:
+  ANSI C
+  make (tai vastaava)
+
+Käyttö:
+  $ make
+  $ ./spiraali
+
+Huomioita:
+  * Ohjelma toimii vakiotilassa, mutta aikavaatimus on suuri. Luokkaa O(n^3) tai jotain siihen suuntaan.
