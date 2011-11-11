@@ -16,15 +16,15 @@ insert :: Int -> Int -> [Char] -> [Char]
 insert i x board = take x board ++ [abc !! i] ++ drop (inc x) board
 
 heppa' :: Int -> Int -> [Char] -> Int
-heppa' i x board = if i < 25
-                     then if board !! x == ' '
+heppa' i x board = if board !! x == ' '
+                     then if i < 24
                             then sum
                                    (zipWith3 heppa'
                                      (repeat (inc i))
                                      (precalc !! x)
                                      (repeat (insert i x board)))
-                            else 0
-                     else 1
+                            else trace board 1
+                     else 0
 
 
 heppa = heppa' 0 0 (take 25 (repeat ' '))
