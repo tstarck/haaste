@@ -7,5 +7,9 @@ Tehtävä:
   http://www.cs.helsinki.fi/u/ahslaaks/oh/heppa.html
 
 Kieli / vaatimukset:
+  Haskell
+  Glasgow Haskell Compiler (testattu v7.0.3) tai yhteensopiva
 
 Käyttö:
+  $ ghc heppa.hs
+  $ ./heppa
