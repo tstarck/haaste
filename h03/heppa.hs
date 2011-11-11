@@ -15,6 +15,9 @@ inc = (+ 1)
 insert :: Int -> Int -> [Char] -> [Char]
 insert i x board = take x board ++ [abc !! i] ++ drop (inc x) board
 
+print' :: Int -> [Char] -> Int
+print' x board = trace (insert 24 x board) 1
+
 heppa' :: Int -> Int -> [Char] -> Int
 heppa' i x board = if board !! x == ' '
                      then if i < 24
@@ -23,7 +26,7 @@ heppa' i x board = if board !! x == ' '
                                      (repeat (inc i))
                                      (precalc !! x)
                                      (repeat (insert i x board)))
-                            else trace board 1
+                            else print' x board
                      else 0
 
 
