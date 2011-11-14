@@ -1,7 +1,5 @@
 {- heppa.hs -}
 
-import Debug.Trace
-
 {- alphabets in use -}
 abc = "ABCDEFGHIJKLMNOPQRSTUVWXY"
 
@@ -16,26 +14,29 @@ precalc = [ [7, 11], [8, 10, 12], [5, 9, 11, 13], [6, 12, 14], [7, 13],
 insert :: Int -> Int -> [Char] -> [Char]
 insert i x board = take x board ++ [abc !! i] ++ drop (x + 1) board
 
-print' :: Int -> [Char] -> Int
-print' x board = trace (insert 24 x board) 1
+{- add nice little newlines -}
+format :: String -> String
+format board = if null board
+                 then "\n"
+                 else take 5 board ++ "\n" ++ format (drop 5 board)
 
 {- hop with horsie recursively
- - print if a complete route through the board is found
- - sum up the number of routes
+ - if a complete route through the board is found return it
+ - otherwise return empty string
  -}
-heppa' :: Int -> Int -> [Char] -> Int
+heppa' :: Int -> Int -> [Char] -> [[Char]]
 heppa' i x board = if board !! x == ' '
                      then if i < 24
-                            then sum
-                                   (zipWith3 heppa'
+                            then concat                           -- not done yet
+                                   (zipWith3 heppa'               -- keep on hopping in the free board
                                      (repeat (i + 1))
                                      (precalc !! x)
                                      (repeat (insert i x board)))
-                            else print' x board
-                     else 0
+                            else [insert i x board]               -- win \o/
+                     else [""]                                    -- fail :(
 
 
-{- start at 1st square on an empty board -}
-heppa = heppa' 0 0 (take 25 (repeat ' '))
-
-main = putStrLn (show heppa)
+main = do
+  let heppa = filter (not.null) (heppa' 0 0 (take 25 (repeat ' ')))
+  putStr (concat (map format heppa))
+  putStrLn (show (length heppa))
