@@ -6,6 +6,23 @@
 Tehtävä:
   http://www.cs.helsinki.fi/u/ahslaaks/oh/sumpot.html
 
+Ratkaisu:
+  Tehtävän triviaalit ratkaisut, kun luku on 1–9 ja
+  eksponentti on 1, jätetään laskematta.
+
+  Skripti käynnistää 8 laskuprosessia, joten se on
+  parhaimmillaan ajettuna usean prosessorin ja/tai
+  coren koneessa.
+
 Kieli / vaatimukset:
+  Bash
+  GNU bc
 
 Käyttö:
+  $ ./sumpot.sh
+
+  # Tai
+
+  $ ./sumpot.sh | sort -n
+
+  # jos tulokset tahdotaan suuruusjärjestyksessä.

@@ -1,7 +1,2 @@
 #!/usr/bin/bc
-
-define pows(x){
-  for (i=x*x; i<10^50; i*=x){
-    print i, "\n"
-  }
-}
+define p(x){for(i=x*x;i<10^50;i*=x){print i,"\n"}}
