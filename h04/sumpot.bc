@@ -1,2 +1,15 @@
 #!/usr/bin/bc
-define p(x){for(i=x*x;i<10^50;i*=x){print i,"\n"}}
+
+define p(x) {
+  for (i = x*x; i < 10^50; i *= x) {
+    s = 0
+
+    for (j = i; j > 0; j /= 10) {
+      s += (j%10)
+    }
+
+    if (x == s) {
+      print i, "\n"
+    }
+  }
+}

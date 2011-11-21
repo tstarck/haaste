@@ -7,12 +7,13 @@ Tehtävä:
   http://www.cs.helsinki.fi/u/ahslaaks/oh/sumpot.html
 
 Ratkaisu:
-  Tehtävän triviaalit ratkaisut, kun luku on 1–9 ja
-  eksponentti on 1, jätetään laskematta.
+  Suurin numerosumma lukujen 1..10^50 välillä on 450
+  (luvulla 10^50-1). Tämän tiedon avulla voidaan käydä
+  läpi luvut 1..450 ja etsiä tehtävänannon ehdon
+  täyttävät potenssit.
 
-  Skripti käynnistää 8 laskuprosessia, joten se on
-  parhaimmillaan ajettuna usean prosessorin ja/tai
-  coren koneessa.
+  Tehtävän triviaalit ratkaisut, kun luku on 1..9 ja
+  eksponentti on 1, jätetään laskematta.
 
 Kieli / vaatimukset:
   Bash
@@ -20,9 +21,3 @@ Kieli / vaatimukset:
 
 Käyttö:
   $ ./sumpot.sh
-
-  # Tai
-
-  $ ./sumpot.sh | sort -n
-
-  # jos tulokset tahdotaan suuruusjärjestyksessä.
