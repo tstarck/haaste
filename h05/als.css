@@ -1,0 +1,48 @@
+/* als.css */
+
+html, body {
+	margin: 0;
+	padding: 0;
+}
+
+h1 {
+	margin: 0 0 0.8em 0;
+	padding: 0.8em 2em 0.8em 2em;
+	color: white;
+	background-color: #333;
+}
+
+form > * {
+	font: 14pt "Arial", sans-serif;
+}
+
+form > input {
+	border: solid 1px black;
+}
+
+div {
+	border: solid 2px yellow;
+}
+
+table {
+	float: left;
+	margin: 0 1em 1em 1em;
+	border: dotted 1px navy;
+}
+
+table > caption {
+	caption-side: bottom;
+}
+
+td {
+	text-align: center;
+}
+
+td.jaa {
+	color: #333;
+	font: 11pt serif;
+}
+td.ei {
+	color: silver;
+	font: 10pt serif;
+}
