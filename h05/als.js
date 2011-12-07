@@ -1,18 +1,5 @@
 /* als.js */
 
-var kakku = [
-	0, 0, 1, 1, 0, 1, 0, 1, 0, 0,
-	0, 1, 0, 1, 0, 0, 0, 1, 0, 1,
-	0, 0, 0, 1, 0, 0, 0, 0, 0, 1,
-	0, 1, 0, 0, 0, 0, 0, 1, 0, 0,
-	0, 1, 0, 1, 0, 0, 0, 1, 0, 0,
-	0, 0, 0, 1, 0, 0, 0, 0, 0, 1,
-	0, 1, 0, 0, 0, 0, 0, 1, 0, 0,
-	0, 1, 0, 1, 0, 0, 0, 0, 0, 1,
-	0, 0, 0, 1, 0, 0, 0, 0, 0, 1,
-	0, 0, 0, 0, 0, 0, 0, 1, 0, 0,
-];
-
 String.prototype.trim = function() {
 	/* trim12 by Steven Levithan */
 	var str = this.replace(/^\s\s*/, '');
@@ -22,71 +9,95 @@ String.prototype.trim = function() {
 	return str.slice(0, i+1).toString();
 }
 
-function laskeAikuistenOikeesti(n) {
-	// console.log("laskeAikuistenOikeesti(" + n + ")");
+var kakku = [ 1,                            // 0
+	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, // 1..10
+	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1  // 91..100
+];
 
-	var i = n-2;
-	var j = 2;
-
-	while (i >= 2 && j <= n) {
-		console.log("[i, j] :: [" + i + ", " + j + "]");
-
-		laske(i) + laske(j);
-
-		i--;
-		j++;
+kakku.talleta = function(i, s) {
+	if (this[i] == -1) {
+		this[i] = s;
 	}
-
-	/*
-	for (var i=n, j=2; i>=2 && j<=n; i++) {
-		--j;
-		console.log("[i, j] :: [" + i + ", " + j + "]");
-	}
-	*/
 }
 
-function laske(n) {
-	console.log("laske(" + n + ")");
+var alkuluvut = [
+	 2,  3,  5,  7, 11,
+	13, 17, 19, 23, 29,
+	31, 37, 41, 43, 47,
+	53, 59, 61, 67, 71,
+	73, 79, 83, 89, 97
+];
 
-	if (kakku[n] != 0) {
-		console.log("kakku hitti @" + n);
-		return kakku[n];
+alkuluvut.pienemmatKuin = function(n) {
+	function ehto(e, i, a) {
+		return (e <= n);
 	}
-	else {
-		console.log("kakku huti  @" + n);
-		return laskeAikuistenOikeesti(n);
-	}
+	return this.filter(ehto);
+}
+
+function laske(nro, taso) {
+	if (kakku[nro] != -1) return kakku[nro];
+
+	var summa = 0;
+
+	alkuluvut.pienemmatKuin(nro).forEach(function(n) {
+		summa += laske(nro-n, taso+1);
+	});
+
+	kakku.talleta(nro, summa);
+
+	return summa;
 }
 
 function handlaa(tapahtuma) {
 	tapahtuma.preventDefault();
 
-	console.log("; -- -- -- -- -- -- -- -- ;");
+	var otto  = document.getElementById('otto');
+	var nro   = parseInt(otto.value.trim().substring(0, 12));
+	var alku  = (new Date).getTime();
+	var tulos = (alkuluvut.indexOf(nro) == -1)? 0: -1;
 
-	var otto = document.getElementById('otto');
-	var nro = parseInt(otto.value.trim().substring(0, 12));
-	var alku = (new Date).getTime();
+	if (0 < nro && nro <= 100) {
+		tulos += laske(nro, 0);
+	}
 
-	console.log("nro :: " + nro);
-	console.log("alku  > " + alku);
-
-	console.log("TULOS :: " + laske(nro));
+	console.log("TULOS:: " + tulos);
 
 	var loppu = (new Date).getTime();
-	console.log("loppu < " + loppu);
-	console.log("matka = " + (loppu - alku));
+
+	console.log("aika == " + (loppu - alku));
+
+	kakkushow();
 
 	return false;
 }
 
-function esitäKakku() {
+function pakkaa(n) {
+	var i = 0;
+	var u = ['', 'k', 'M', 'G', 'T', 'P', 'E'];
+	while (n >= 1000) {
+		n = Math.floor(n/1000);
+		i++;
+	}
+	return n + u[i];
+}
+
+function kakkushow() {
 	var merkki = null;
 
-	for (var i=0; i<kakku.length; i++) {
-		var solu = document.getElementById('s' + i);
+	for (var i=1; i<kakku.length; i++) {
+		var solu = document.getElementById('k' + i);
 
-		if (kakku[i] != 0) {
-			merkki = kakku[i];
+		if (kakku[i] != -1) {
+			merkki = pakkaa(kakku[i]);
 			solu.className = "jaa";
 		}
 		else {
@@ -96,16 +107,18 @@ function esitäKakku() {
 
 		var tila = document.createTextNode(merkki);
 
+		while (solu.hasChildNodes()) {
+			solu.removeChild(solu.lastChild);
+		}
+
 		solu.appendChild(tila);
 	}
 }
 
 function alusta() {
 	document.getElementById('lomake').addEventListener("submit", handlaa);
-
 	document.getElementById('otto').focus();
-
-	esitäKakku();
+	kakkushow();
 }
 
 window.addEventListener("load", alusta);

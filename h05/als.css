@@ -20,10 +20,6 @@ form > input {
 	border: solid 1px black;
 }
 
-div {
-	border: solid 2px yellow;
-}
-
 table {
 	float: left;
 	margin: 0 1em 1em 1em;
@@ -32,17 +28,19 @@ table {
 
 table > caption {
 	caption-side: bottom;
+	font: 10pt serif;
 }
 
 td {
 	text-align: center;
+	font-family: monospace;
 }
 
 td.jaa {
 	color: #333;
-	font: 11pt serif;
+	font-size: 10pt;
 }
 td.ei {
 	color: silver;
-	font: 10pt serif;
+	font-size: 11pt;
 }
