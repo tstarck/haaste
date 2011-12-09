@@ -52,30 +52,6 @@ kakku.merkkijonoksi = function(i) {
 	else return this[i].toString();
 }
 
-function laske(nro, taso) {
-	if (taso > __depth) __depth = taso;
-
-	if (nro == 0) return 1;
-
-	if (kakku[nro] != -1) {
-		__cachehit++;
-		return kakku[nro];
-	}
-	else {
-		__cachemiss++;
-	}
-
-	var summa = 0;
-
-	alkuluvut.pienemmatKuin(nro).forEach(function(n) {
-		summa += laske(nro-n, taso+1);
-	});
-
-	kakku.talleta(nro, summa);
-
-	return summa;
-}
-
 function tulosta(nro, tulos, kulunut) {
 	var tuloslista = document.getElementById('tulot');
 
@@ -124,33 +100,6 @@ function tulosta(nro, tulos, kulunut) {
 	tuloslista.insertBefore(p, tuloslista.firstChild);
 }
 
-function handlaa(tapahtuma) {
-	tapahtuma.preventDefault();
-
-	__depth = 0;
-	__cachehit = 0;
-	__cachemiss = 0;
-
-	var otto  = document.getElementById('otto');
-	var nro   = parseInt(otto.value.trim().substring(0, 12));
-	var alku  = (new Date).getTime();
-	var tulos = (alkuluvut.indexOf(nro) == -1)? 0: -1;
-
-	if (nro <= 0 || 100 < nro) {
-		return false;
-	}
-
-	tulos += laske(nro, 0);
-
-	var loppu = (new Date).getTime();
-
-	tulosta(nro, tulos, (loppu - alku));
-
-	kakkushow();
-
-	return false;
-}
-
 function kakkushow() {
 	var lista = document.getElementById('kakku');
 
@@ -167,6 +116,58 @@ function kakkushow() {
 		otus.appendChild(sana);
 		lista.appendChild(otus);
 	}
+}
+
+function laske(nro, taso) {
+	if (taso > __depth) __depth = taso;
+
+	if (nro == 0) return 1;
+
+	if (kakku[nro] != -1) {
+		__cachehit++;
+		return kakku[nro];
+	}
+	else {
+		__cachemiss++;
+	}
+
+	var summa = 0;
+
+	alkuluvut.pienemmatKuin(nro).forEach(function(n) {
+		summa += laske(nro-n, taso+1);
+	});
+
+	kakku.talleta(nro, summa);
+
+	return summa;
+}
+
+function handlaa(tapahtuma) {
+	tapahtuma.preventDefault();
+
+	__depth = 0;
+	__cachehit = 0;
+	__cachemiss = 0;
+
+	var otto  = document.getElementById('otto');
+	var nro   = parseInt(otto.value.trim().substring(0, 12));
+	var alku  = (new Date).getTime();
+	var tulos = (alkuluvut.indexOf(nro) == -1)? 0: -1;
+
+	if (isNaN(nro) || nro <= 0 || 100 < nro) {
+		alert("Luvun tulee olla numero väliltä 1..100!");
+		return false;
+	}
+
+	tulos += laske(nro, 0);
+
+	var loppu = (new Date).getTime();
+
+	tulosta(nro, tulos, (loppu - alku));
+
+	kakkushow();
+
+	return false;
 }
 
 function alusta() {
