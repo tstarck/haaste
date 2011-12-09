@@ -9,7 +9,26 @@ String.prototype.trim = function() {
 	return str.slice(0, i+1).toString();
 }
 
-var kakku = [ 1,                            // 0
+var __depth = 0;
+var __cachehit = 0;
+var __cachemiss = 0;
+
+var alkuluvut = [
+	 2,  3,  5,  7, 11,
+	13, 17, 19, 23, 29,
+	31, 37, 41, 43, 47,
+	53, 59, 61, 67, 71,
+	73, 79, 83, 89, 97
+];
+
+alkuluvut.pienemmatKuin = function(n) {
+	function ehto(e, i, a) {
+		return (e <= n);
+	}
+	return this.filter(ehto);
+}
+
+var kakku = [ 0,
 	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, // 1..10
 	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
 	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -28,23 +47,23 @@ kakku.talleta = function(i, s) {
 	}
 }
 
-var alkuluvut = [
-	 2,  3,  5,  7, 11,
-	13, 17, 19, 23, 29,
-	31, 37, 41, 43, 47,
-	53, 59, 61, 67, 71,
-	73, 79, 83, 89, 97
-];
-
-alkuluvut.pienemmatKuin = function(n) {
-	function ehto(e, i, a) {
-		return (e <= n);
-	}
-	return this.filter(ehto);
+kakku.merkkijonoksi = function(i) {
+	if (this[i] == -1) return '✕';
+	else return this[i].toString();
 }
 
 function laske(nro, taso) {
-	if (kakku[nro] != -1) return kakku[nro];
+	if (taso > __depth) __depth = taso;
+
+	if (nro == 0) return 1;
+
+	if (kakku[nro] != -1) {
+		__cachehit++;
+		return kakku[nro];
+	}
+	else {
+		__cachemiss++;
+	}
 
 	var summa = 0;
 
@@ -57,61 +76,96 @@ function laske(nro, taso) {
 	return summa;
 }
 
+function tulosta(nro, tulos, kulunut) {
+	var tuloslista = document.getElementById('tulot');
+
+	var p      = document.createElement('p');
+
+	var strong = document.createElement('strong');
+	var tulos  = document.createTextNode(tulos);
+
+	var syote  = document.createTextNode('Syöte: ');
+	var b      = document.createElement('b');
+	var nro    = document.createTextNode(nro);
+	var aika   = document.createTextNode('Aika: ');
+	var em     = document.createElement('em');
+	var kello  = document.createTextNode(kulunut + ' ms');
+	var syvyys = document.createTextNode('Rekursion syvyys: ' + __depth);
+	var br     = document.createElement('br');
+
+	var kakku  = document.createTextNode('Välimuisti: ');
+	var hit    = document.createElement('span');
+	var osumia = document.createTextNode('osumia ' + __cachehit);
+	var kautta = document.createTextNode(' / ');
+	var miss   = document.createElement('span');
+	var huteja = document.createTextNode('huteja ' + __cachemiss);
+
+	hit.className = "hit";
+	miss.className = "miss";
+
+	strong.appendChild(tulos);
+	b.appendChild(nro);
+	em.appendChild(kello);
+	hit.appendChild(osumia);
+	miss.appendChild(huteja);
+
+	p.appendChild(strong);
+	p.appendChild(syote);
+	p.appendChild(b);
+	p.appendChild(aika);
+	p.appendChild(em);
+	p.appendChild(syvyys);
+	p.appendChild(br);
+	p.appendChild(kakku);
+	p.appendChild(hit);
+	p.appendChild(kautta);
+	p.appendChild(miss);
+
+	tuloslista.insertBefore(p, tuloslista.firstChild);
+}
+
 function handlaa(tapahtuma) {
 	tapahtuma.preventDefault();
+
+	__depth = 0;
+	__cachehit = 0;
+	__cachemiss = 0;
 
 	var otto  = document.getElementById('otto');
 	var nro   = parseInt(otto.value.trim().substring(0, 12));
 	var alku  = (new Date).getTime();
 	var tulos = (alkuluvut.indexOf(nro) == -1)? 0: -1;
 
-	if (0 < nro && nro <= 100) {
-		tulos += laske(nro, 0);
+	if (nro <= 0 || 100 < nro) {
+		return false;
 	}
 
-	console.log("TULOS:: " + tulos);
+	tulos += laske(nro, 0);
 
 	var loppu = (new Date).getTime();
 
-	console.log("aika == " + (loppu - alku));
+	tulosta(nro, tulos, (loppu - alku));
 
 	kakkushow();
 
 	return false;
 }
 
-function pakkaa(n) {
-	var i = 0;
-	var u = ['', 'k', 'M', 'G', 'T', 'P', 'E'];
-	while (n >= 1000) {
-		n = Math.floor(n/1000);
-		i++;
-	}
-	return n + u[i];
-}
-
 function kakkushow() {
-	var merkki = null;
+	var lista = document.getElementById('kakku');
+
+	while (lista.hasChildNodes()) {
+		lista.removeChild(lista.lastChild);
+	}
 
 	for (var i=1; i<kakku.length; i++) {
-		var solu = document.getElementById('k' + i);
+		var otus = document.createElement('li');
+		var sana = document.createTextNode(kakku.merkkijonoksi(i));
 
-		if (kakku[i] != -1) {
-			merkki = pakkaa(kakku[i]);
-			solu.className = "jaa";
-		}
-		else {
-			merkki = '✕';
-			solu.className = "ei";
-		}
+		if (i == 1 || i%10 == 0) otus.className = "kynppi";
 
-		var tila = document.createTextNode(merkki);
-
-		while (solu.hasChildNodes()) {
-			solu.removeChild(solu.lastChild);
-		}
-
-		solu.appendChild(tila);
+		otus.appendChild(sana);
+		lista.appendChild(otus);
 	}
 }
 
