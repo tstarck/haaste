@@ -7,9 +7,16 @@ Tehtävä:
   http://www.cs.helsinki.fi/u/ahslaaks/oh/als.html
 
 Ratkaisu:
+  Tehdään syvyyshaku summapuuhun (puu, jossa solmut ovat alkulukuja
+  ja kaaret yhteenlaskuja) ja lasketaan lehdet, jotka johtavat oikeaan
+  summaan.
+
+  Samalla pidetään kirjaa löydetyistä summista, jotta alipuita ei
+  tarvitse toistuvasti.
 
 Kieli / vaatimukset:
   Javascript, XHTML ja CSS
-  selain
+  Selain
 
 Käyttö:
+  Avaa als.xhtml mieleisellä selaimella.
